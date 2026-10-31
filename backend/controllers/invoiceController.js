@@ -4,6 +4,8 @@ import {
   getInvoices,
   getInvoiceById
 } from "../services/billingService.js";
+//controlls the flow of invoice routes
+
 
 export const createInvoiceController = async (req, res) => {
   try {
@@ -21,6 +23,7 @@ export const createInvoiceController = async (req, res) => {
     });
   }
 };
+
 
 export const getInvoicesController = async (req, res) => {
   try {
