@@ -12,6 +12,12 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Customers from "./pages/Customers";
 
+import Plans from "./pages/Plans";
+import Quotations from "./pages/Quotations";
+import Subscriptions from "./pages/Subscriptions";
+import Invoices from "./pages/Invoices";
+import Payments from "./pages/Payments";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 import { useAuth } from "./context/AuthContext";
@@ -59,6 +65,11 @@ function App() {
         >
           <Route path="/" element={<Dashboard />} />
           <Route path="/customers" element={<Customers />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/quotations" element={<Quotations />} />
+          <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/payments" element={<Payments />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
