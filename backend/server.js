@@ -1,4 +1,4 @@
-
+import authRoutes from "./routes/authRoutes.js";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -15,6 +15,7 @@ app.use(express.json());
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);
 
 // Test API
 app.get("/", (req, res) => {
