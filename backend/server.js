@@ -1,18 +1,19 @@
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-
 import connectDB from "./config/db.js";
+import invoiceRoutes from "./routes/invoiceRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
-
 dotenv.config();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-// Product API routes
+app.use("/api/invoices", invoiceRoutes);
+app.use("/api/payments", paymentRoutes);
 app.use("/api/products", productRoutes);
 
 // Test API
@@ -23,7 +24,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Start server after database connection
+// Start server only after database connects
 const startServer = async () => {
   try {
     await connectDB();
