@@ -6,6 +6,7 @@ import connectDB from "./config/db.js";
 import invoiceRoutes from "./routes/invoiceRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import planRoutes from "./routes/planRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -16,6 +17,7 @@ app.use("/api/invoices", invoiceRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/plans", planRoutes);
 
 // Test API
 app.get("/", (req, res) => {
