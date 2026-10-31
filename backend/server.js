@@ -1,3 +1,4 @@
+import customerRoutes from "./routes/customerRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import express from "express";
 import cors from "cors";
@@ -20,6 +21,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/quotations", quotationRoutes);
+app.use("/api/customers", customerRoutes);
 
 // Test API
 app.get("/", (req, res) => {
