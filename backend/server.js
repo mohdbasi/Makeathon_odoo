@@ -7,6 +7,7 @@ import invoiceRoutes from "./routes/invoiceRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
+import quotationRoutes from "./routes/quotationRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -18,6 +19,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/plans", planRoutes);
+app.use("/api/quotations", quotationRoutes);
 
 // Test API
 app.get("/", (req, res) => {
