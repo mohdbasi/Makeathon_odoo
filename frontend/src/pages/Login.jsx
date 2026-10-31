@@ -2,15 +2,26 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "../App.css";
 
 function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,12 +29,11 @@ function Login() {
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate("/", { replace: true });
+      await login(formData.email, formData.password);
+      navigate("/");
     } catch (err) {
       setError(
-        err.response?.data?.message ||
-        "Login failed. Please try again."
+        err.response?.data?.message || "Login failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -31,116 +41,64 @@ function Login() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Welcome Back</h1>
-        <p style={styles.subtitle}>
-          Sign in to your Subscription Manager
-        </p>
+    <div className="auth-page">
+      <div className="auth-card">
 
-        {error && <p style={styles.error}>{error}</p>}
+        <div className="auth-header">
+          <h1>Welcome Back</h1>
+          <p>Sign in to your Subscription Manager</p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <label style={styles.label}>Email Address</label>
-          <input
-            style={styles.input}
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+        {error && (
+          <div className="auth-error" role="alert">
+            {error}
+          </div>
+        )}
 
-          <label style={styles.label}>Password</label>
-          <input
-            style={styles.input}
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+        <form onSubmit={handleSubmit} className="auth-form">
 
-          <button
-            style={styles.button}
-            type="submit"
-            disabled={loading}
-          >
+          <div className="auth-field">
+            <label htmlFor="email">Email Address</label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              autoComplete="email"
+              required
+            />
+          </div>
+
+          <div className="auth-field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              autoComplete="current-password"
+              required
+            />
+          </div>
+
+          <button type="submit" disabled={loading}>
             {loading ? "Signing in..." : "Login"}
           </button>
+
         </form>
 
-        <p style={styles.footer}>
-          Don't have an account?{" "}
+        <div className="auth-footer">
+          <span>Don't have an account?</span>
           <Link to="/register">Register here</Link>
-        </p>
+        </div>
+
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#f1f5f9",
-    padding: "20px",
-  },
-  card: {
-    width: "100%",
-    maxWidth: "420px",
-    background: "white",
-    padding: "35px",
-    borderRadius: "12px",
-    boxShadow: "0 5px 25px rgba(0,0,0,0.08)",
-  },
-  title: {
-    textAlign: "center",
-    color: "#1e293b",
-    marginBottom: "8px",
-  },
-  subtitle: {
-    textAlign: "center",
-    color: "#64748b",
-    marginBottom: "25px",
-  },
-  label: {
-    display: "block",
-    marginBottom: "7px",
-    fontWeight: "600",
-    color: "#334155",
-  },
-  input: {
-    width: "100%",
-    padding: "12px",
-    marginBottom: "20px",
-    border: "1px solid #cbd5e1",
-    borderRadius: "7px",
-    boxSizing: "border-box",
-  },
-  button: {
-    width: "100%",
-    padding: "13px",
-    background: "#2563eb",
-    color: "white",
-    border: "none",
-    borderRadius: "7px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-  error: {
-    color: "#dc2626",
-    background: "#fee2e2",
-    padding: "10px",
-    borderRadius: "6px",
-  },
-  footer: {
-    textAlign: "center",
-    marginTop: "22px",
-    color: "#64748b",
-  },
-};
 
 export default Login;
