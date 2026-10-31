@@ -927,3 +927,50 @@ body {
     font-size: 32px;
   }
 }
+
+/* ACCESS DENIED PAGE */
+
+.access-denied {
+  min-height: 65vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+}
+
+.access-denied-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 40px 30px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid #e7ebf2;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.access-denied-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.access-denied-card h1 {
+  font-size: 26px;
+  color: #b42318;
+  margin-bottom: 12px;
+}
+
+.access-denied-card p {
+  color: #667085;
+  line-height: 1.6;
+}
+
+.access-denied-card a {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 11px 20px;
+  border-radius: 7px;
+  background: #5145e5;
+  color: white;
+  text-decoration: none;
+}
