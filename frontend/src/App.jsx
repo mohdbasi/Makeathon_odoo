@@ -38,6 +38,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* Public Routes */}
         <Route
           path="/login"
           element={
@@ -56,6 +58,7 @@ function App() {
           }
         />
 
+        {/* Protected Routes */}
         <Route
           element={
             <ProtectedRoute>
@@ -64,15 +67,23 @@ function App() {
           }
         >
           <Route path="/" element={<Dashboard />} />
+
           <Route path="/customers" element={<Customers />} />
+
           <Route path="/plans" element={<Plans />} />
+
           <Route path="/quotations" element={<Quotations />} />
+
           <Route path="/subscriptions" element={<Subscriptions />} />
+
           <Route path="/invoices" element={<Invoices />} />
+
           <Route path="/payments" element={<Payments />} />
         </Route>
 
+        {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
+
       </Routes>
     </BrowserRouter>
   );
