@@ -21,6 +21,7 @@ import Payments from "./pages/Payments";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 import { useAuth } from "./context/AuthContext";
+import RoleRoute from "./components/RoleRoute";
 
 function AuthRedirect({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -68,17 +69,41 @@ function App() {
         >
           <Route path="/" element={<Dashboard />} />
 
-          <Route path="/customers" element={<Customers />} />
+          <Route path="/customers" element={
+            <RoleRoute allowedRoles={['admin', 'staff']}>
+              <Customers />
+            </RoleRoute>
+          } />
 
-          <Route path="/plans" element={<Plans />} />
+          <Route path="/plans" element={
+            <RoleRoute allowedRoles={['admin', 'staff']}>
+              <Plans />
+            </RoleRoute>
+          } />
 
-          <Route path="/quotations" element={<Quotations />} />
+          <Route path="/quotations" element={
+            <RoleRoute allowedRoles={['admin', 'staff']}>
+              <Quotations />
+            </RoleRoute>
+          } />
 
-          <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route path="/subscriptions" element={
+            <RoleRoute allowedRoles={['admin', 'staff']}>
+              <Subscriptions />
+            </RoleRoute>
+          } />
 
-          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/invoices" element={
+            <RoleRoute allowedRoles={['admin', 'staff']}>
+              <Invoices />
+            </RoleRoute>
+          } />
 
-          <Route path="/payments" element={<Payments />} />
+          <Route path="/payments" element={
+            <RoleRoute allowedRoles={['admin', 'staff']}>
+              <Payments />
+            </RoleRoute>
+          } />
         </Route>
 
         {/* 404 Route */}
