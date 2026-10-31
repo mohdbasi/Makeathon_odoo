@@ -1,36 +1,39 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import "../App.css";
 
 function Customers() {
-  const { user } = useAuth();
-
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-
+  const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const emptyForm = {
     name: "",
     email: "",
     phone: "",
-    address: "",
-  });
+    company: ""
+  };
 
+  const [form, setForm] = useState(emptyForm);
+
+  // Fetch customers
   const fetchCustomers = async () => {
     try {
       setLoading(true);
       setError("");
 
       const response = await api.get("/customers");
-      setCustomers(response.data.customers || []);
+
+      setCustomers(response.data.data || []);
     } catch (err) {
       setError(
-        err.response?.data?.message || "Failed to load customers."
+        err.response?.data?.message ||
+        "Unable to load customers. Please try again."
       );
     } finally {
       setLoading(false);
@@ -41,224 +44,302 @@ function Customers() {
     fetchCustomers();
   }, []);
 
+  // Search customers
+  const filteredCustomers = useMemo(() => {
+    const keyword = search.toLowerCase();
+
+    return customers.filter(customer =>
+      [
+        customer.name,
+        customer.email,
+        customer.phone,
+        customer.company
+      ].some(value =>
+        String(value || "").toLowerCase().includes(keyword)
+      )
+    );
+  }, [customers, search]);
+
+  // Handle form changes
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
     });
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-    });
-    setEditingId(null);
-    setShowForm(false);
-  };
-
+  // Create customer
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setMessage("");
 
     try {
-      if (editingId) {
-        await api.put(`/customers/${editingId}`, formData);
-        setMessage("Customer updated successfully.");
-      } else {
-        await api.post("/customers", formData);
-        setMessage("Customer created successfully.");
-      }
-
-      resetForm();
-      await fetchCustomers();
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Unable to save customer."
-      );
-    }
-  };
-
-  const handleEdit = (customer) => {
-    setFormData({
-      name: customer.name || "",
-      email: customer.email || "",
-      phone: customer.phone || "",
-      address: customer.address || "",
-    });
-
-    setEditingId(customer._id);
-    setShowForm(true);
-    setError("");
-    setMessage("");
-  };
-
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this customer?"
-    );
-
-    if (!confirmed) return;
-
-    try {
+      setSubmitting(true);
       setError("");
       setMessage("");
 
-      await api.delete(`/customers/${id}`);
-      setMessage("Customer deleted successfully.");
+      await api.post("/customers", form);
+
+      setMessage("Customer added successfully!");
+      setForm(emptyForm);
+      setShowForm(false);
+
       await fetchCustomers();
     } catch (err) {
       setError(
-        err.response?.data?.message || "Unable to delete customer."
+        err.response?.data?.message ||
+        "Failed to add customer."
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="customers-page">
-      <div className="page-heading">
+    <div className="page-container customers-page">
+
+      {/* PAGE HEADER */}
+
+      <div className="customers-header">
         <div>
           <h1>Customers</h1>
-          <p>Manage your customer information.</p>
+          <p>Manage and organize your customer information.</p>
         </div>
 
-        <button
-          className="primary-button"
-          onClick={() => {
-            resetForm();
-            setShowForm(true);
-          }}
-        >
-          + Add Customer
+        <button onClick={() => setShowForm(!showForm)}>
+          {showForm ? "Close Form" : "+ Add Customer"}
         </button>
       </div>
 
-      {message && <div className="success-message">{message}</div>}
-      {error && <div className="error-message">{error}</div>}
+      {/* NOTIFICATIONS */}
+
+      {error && (
+        <div className="module-message error" role="alert">
+          {error}
+        </div>
+      )}
+
+      {message && (
+        <div className="module-message success" role="status">
+          {message}
+        </div>
+      )}
+
+      {/* STATISTICS */}
+
+      <div className="customer-stats">
+
+        <div className="customer-stat-card">
+          <div className="customer-stat-icon purple">♙</div>
+          <div>
+            <p>Total Customers</p>
+            <h2>{customers.length}</h2>
+          </div>
+        </div>
+
+        <div className="customer-stat-card">
+          <div className="customer-stat-icon green">✓</div>
+          <div>
+            <p>Customer Records</p>
+            <h2>{filteredCustomers.length}</h2>
+          </div>
+        </div>
+
+      </div>
+
+      {/* ADD CUSTOMER FORM */}
 
       {showForm && (
-        <div className="customer-form-card">
-          <h2>{editingId ? "Edit Customer" : "Add New Customer"}</h2>
+        <section className="module-card">
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <label>
-                Customer Name *
-                <input
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter customer name"
-                  required
-                />
-              </label>
+          <div className="module-card-header">
+            <div>
+              <h2>Add New Customer</h2>
+              <p>Enter the customer's details below.</p>
+            </div>
+          </div>
 
-              <label>
-                Email Address *
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter email"
-                  required
-                />
-              </label>
+          <form
+            className="module-form"
+            onSubmit={handleSubmit}
+          >
 
-              <label>
-                Phone Number
-                <input
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Enter phone number"
-                />
-              </label>
+            <div className="form-group">
+              <label htmlFor="customerName">Full Name</label>
+              <input
+                id="customerName"
+                name="name"
+                placeholder="Enter full name"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-              <label>
-                Address
-                <input
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  placeholder="Enter address"
-                />
-              </label>
+            <div className="form-group">
+              <label htmlFor="customerEmail">Email Address</label>
+              <input
+                id="customerEmail"
+                name="email"
+                type="email"
+                placeholder="Enter email address"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="customerPhone">Phone Number</label>
+              <input
+                id="customerPhone"
+                name="phone"
+                type="tel"
+                placeholder="Enter phone number"
+                value={form.phone}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="customerCompany">Company</label>
+              <input
+                id="customerCompany"
+                name="company"
+                placeholder="Enter company name"
+                value={form.company}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="form-actions">
-              <button type="submit" className="primary-button">
-                {editingId ? "Update Customer" : "Save Customer"}
+              <button type="submit" disabled={submitting}>
+                {submitting ? "Saving..." : "Save Customer"}
               </button>
 
               <button
                 type="button"
-                className="secondary-button"
-                onClick={resetForm}
+                className="secondary"
+                onClick={() => {
+                  setShowForm(false);
+                  setForm(emptyForm);
+                }}
               >
                 Cancel
               </button>
             </div>
+
           </form>
-        </div>
+        </section>
       )}
 
-      <div className="customer-table-card">
-        <h2>Customer List</h2>
+      {/* CUSTOMER LIST */}
+
+      <section className="module-card">
+
+        <div className="module-toolbar">
+
+          <div>
+            <h2>Customer List</h2>
+            <p>
+              View and manage all registered customers.
+            </p>
+          </div>
+
+          <button
+            className="secondary"
+            onClick={fetchCustomers}
+            disabled={loading}
+          >
+            ↻ Refresh
+          </button>
+
+        </div>
+
+        {/* SEARCH */}
+
+        <div className="customer-search">
+          <span>⌕</span>
+
+          <input
+            type="search"
+            placeholder="Search by name, email, phone or company..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            aria-label="Search customers"
+          />
+        </div>
+
+        {/* TABLE */}
 
         {loading ? (
-          <p>Loading customers...</p>
-        ) : customers.length === 0 ? (
-          <p>No customers found. Add your first customer.</p>
+
+          <div className="empty-state">
+            Loading customers...
+          </div>
+
+        ) : filteredCustomers.length === 0 ? (
+
+          <div className="empty-state">
+            {search
+              ? "No customers match your search."
+              : "No customers found. Add your first customer."}
+          </div>
+
         ) : (
+
           <div className="table-wrapper">
-            <table className="customer-table">
+
+            <table>
+
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Email</th>
+                  <th>Customer</th>
+                  <th>Email Address</th>
                   <th>Phone</th>
-                  <th>Address</th>
-                  <th>Actions</th>
+                  <th>Company</th>
                 </tr>
               </thead>
 
               <tbody>
-                {customers.map((customer) => (
-                  <tr key={customer._id}>
-                    <td>{customer.name}</td>
-                    <td>{customer.email}</td>
-                    <td>{customer.phone || "—"}</td>
-                    <td>{customer.address || "—"}</td>
-                    <td>
-                      <div className="table-actions">
-                        <button
-                          className="edit-button"
-                          onClick={() => handleEdit(customer)}
-                        >
-                          Edit
-                        </button>
 
-                        {user?.role === "admin" && (
-                          <button
-                            className="delete-button"
-                            onClick={() => handleDelete(customer._id)}
-                          >
-                            Delete
-                          </button>
-                        )}
+                {filteredCustomers.map(customer => (
+
+                  <tr key={customer._id}>
+
+                    <td>
+                      <div className="customer-name-cell">
+                        <div className="customer-avatar">
+                          {(customer.name || "C")
+                            .charAt(0)
+                            .toUpperCase()}
+                        </div>
+
+                        <strong>
+                          {customer.name || "Unnamed"}
+                        </strong>
                       </div>
                     </td>
+
+                    <td>{customer.email || "—"}</td>
+
+                    <td>{customer.phone || "—"}</td>
+
+                    <td>{customer.company || "—"}</td>
+
                   </tr>
+
                 ))}
+
               </tbody>
+
             </table>
+
           </div>
+
         )}
-      </div>
+
+      </section>
+
     </div>
   );
 }
