@@ -12,14 +12,13 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import MainLayout from "./layouts/MainLayout";
 import { useAuth } from "./context/AuthContext";
 
 function AuthRedirect({ children }) {
   const { isAuthenticated, loading } = useAuth();
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  if (loading) return <p>Loading...</p>;
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
@@ -51,13 +50,14 @@ function App() {
         />
 
         <Route
-          path="/"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <MainLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="/" element={<Dashboard />} />
+        </Route>
 
         <Route path="*" element={<NotFound />} />
       </Routes>

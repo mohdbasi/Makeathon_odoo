@@ -2,79 +2,82 @@
 import { useAuth } from "../context/AuthContext";
 
 function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+
+  const stats = [
+    { title: "Total Customers", value: "0", color: "#2563eb" },
+    { title: "Active Plans", value: "0", color: "#7c3aed" },
+    { title: "Subscriptions", value: "0", color: "#0891b2" },
+    { title: "Pending Invoices", value: "0", color: "#ea580c" },
+  ];
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#f1f5f9",
-        padding: "30px",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "15px",
-        }}
-      >
+    <div>
+      <div style={styles.heading}>
         <div>
-          <h1 style={{ color: "#1e293b" }}>
-            Subscription Dashboard
-          </h1>
-
-          <p style={{ color: "#64748b" }}>
-            Welcome, {user?.name || "User"}!
-          </p>
+          <h1>Dashboard</h1>
+          <p>Welcome back, {user?.name || "User"}!</p>
         </div>
-
-        <button
-          onClick={logout}
-          style={{
-            padding: "10px 20px",
-            background: "#dc2626",
-            color: "white",
-            border: "none",
-            borderRadius: "7px",
-            cursor: "pointer",
-          }}
-        >
-          Logout
-        </button>
       </div>
 
-      <div
-        style={{
-          marginTop: "35px",
-          padding: "25px",
-          background: "white",
-          borderRadius: "12px",
-        }}
-      >
-        <h2>Welcome to your Subscription Manager</h2>
+      <div style={styles.grid}>
+        {stats.map((stat) => (
+          <div key={stat.title} style={styles.card}>
+            <div
+              style={{
+                ...styles.indicator,
+                background: stat.color,
+              }}
+            />
+            <p style={styles.label}>{stat.title}</p>
+            <h2>{stat.value}</h2>
+          </div>
+        ))}
+      </div>
 
-        <p style={{ color: "#64748b" }}>
-          Your authentication is connected successfully.
-          Business modules will be integrated next.
-        </p>
-
+      <div style={styles.welcome}>
+        <h2>Your business overview</h2>
         <p>
-          <strong>Name:</strong> {user?.name}
-        </p>
-
-        <p>
-          <strong>Email:</strong> {user?.email}
-        </p>
-
-        <p>
-          <strong>Role:</strong> {user?.role}
+          Your subscription management workspace is ready.
+          Customer, plan, quotation and billing data will
+          appear here as we integrate each module.
         </p>
       </div>
     </div>
   );
 }
+
+const styles = {
+  heading: {
+    marginBottom: "28px",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+    gap: "20px",
+  },
+  card: {
+    background: "white",
+    padding: "22px",
+    borderRadius: "12px",
+    border: "1px solid #e2e8f0",
+  },
+  indicator: {
+    width: "35px",
+    height: "5px",
+    borderRadius: "5px",
+  },
+  label: {
+    color: "#64748b",
+    fontSize: "14px",
+  },
+  welcome: {
+    marginTop: "28px",
+    padding: "25px",
+    background: "white",
+    border: "1px solid #e2e8f0",
+    borderRadius: "12px",
+  },
+};
 
 export default Dashboard;
