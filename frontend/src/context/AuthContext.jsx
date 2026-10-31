@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 
-import api from "../services/Api";
+import api from "../services/api";
 
 const AuthContext = createContext();
 
