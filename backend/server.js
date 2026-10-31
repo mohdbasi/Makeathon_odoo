@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import productRoutes from "./routes/productRoutes.js";
 
 dotenv.config();
 
@@ -10,6 +11,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Product API routes
+app.use("/api/products", productRoutes);
 
 // Test API
 app.get("/", (req, res) => {
@@ -19,7 +23,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Start server only after database connects
+// Start server after database connection
 const startServer = async () => {
   try {
     await connectDB();
